@@ -14,7 +14,7 @@ body {
 #gameChannels {
   display:none;
   height:80vh;
-  width:98vw;
+  width:95vw;
   border-style:solid;
   border-color:black;
   border-width:2px;
@@ -29,11 +29,6 @@ body {
   margin-top:33.5vh;
   /* margin-bottom:33.5vh; */
   font-size:2.5vw;
-}
-
-#enter {
-  height:5vh;
-  width:5vw;
 }
 
 #start {
@@ -61,6 +56,36 @@ body {
   border-width:1px;
 }
 
+#submit {
+  /* display:none; */
+
+  margin-left:93.6vw;
+  margin-top:-3.36vh;
+  width:5vw;
+  height:3.3vh;
+  background-color:green;
+  font-size:1vw;
+  font-weight:bold;
+  border-style:solid;
+  border-color:black;
+  border-width:2px;
+}
+
+#chat {
+  /* display:none; */
+
+  width:93vw;
+  border-style:solid;
+  border-color:black;
+  border-width:2px;
+  margin-left:0.5vw;
+}
+
+#chatbox {
+  display: none;
+}
+
+
 .room {
   display:none;
   height:60vh;
@@ -79,11 +104,12 @@ body {
   border-color:black;
   border-width:1px;
   margin-left:0.5vw;
-
+  background-color:white;
+  vertical-align:text-bottom;
 }
 
 span {
-  display: none;
+  /* display: none; */
 
   float: right;
   color: green;

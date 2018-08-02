@@ -32,7 +32,6 @@ function returningUser(userId) {
   $('form').css("display", "none");
 }
 
-//On Database Changes (EVENT)
 database.ref().on("value", function(snapshot) {
     if(!snapshot.child("server").exists()) {
       database.ref('server').set({
@@ -126,17 +125,10 @@ $(document).ready(function() {
     var room = $(this).attr("data-room");
     $('#gameChannels').css("display", "none");
     $('#' + room).css("display", "block");
-    $('#chatroom').css("display", "block");
-
-
-    // var temp = $('<div></div>');
-    // temp.addClass("room");
-    // temp.attr("id", room);
-    //
-    // $('#container').append(temp);
-    // $('#' + room).css("display", "block");
-    // console.log(room);
-    // $('.channel').css("display", "none");
+    // $('#chatroom').css("display", "block");
+    // $('#submit').css("display", "block");
+    // $('#chat').css("display", "block");
+    $('#chatroom, #unique, #chatbox, #submit, #chat').css("display", "block");
   });
 
   //starting the game (user interacting with DOM)
@@ -155,5 +147,13 @@ $(document).ready(function() {
     console.log("Name Set");
     $('.channel').css("display", "block");
     $('#login').css("display", "none");
+  });
+
+  $('#submit').on("click", function(event) {
+    event.preventDefault();
+    var temp = $('<div>');
+    temp.text($('#chat').val());
+    $('#chat').val("");
+    $('#chatroom').append(temp);
   });
 });
