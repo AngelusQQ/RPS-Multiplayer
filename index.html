@@ -1,0 +1,43 @@
+<!DOCTYPE HTML>
+<HTML>
+    <HEAD>
+      <TITLE></TITLE>
+      <META name="viewport" content="width=device-width, initial-scale=1.0">
+      <LINK rel="stylesheet" href="assets/css/style.css">
+    </HEAD>
+    <BODY>
+
+      <!-- jquery -->
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+      <!-- BootStrap (Optional) -->
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+      <!-- firebase -->
+      <script src="https://www.gstatic.com/firebasejs/5.3.0/firebase.js"></script>
+
+      <img id=title src="assets/images/title.png">
+      <button type="submit" class="btn btn-primary" id="start">Start</button>
+      <div id="gameChannels">
+        <audio id="menutheme" src="assets/sounds/menuhover.mp3"></audio>
+        <form>
+          <div class="form-group">
+            <input type="text" class="form-control" id="login" placeholder="Please Enter Name">
+            <button type="submit" class="btn btn-primary" id="button">Enter</button>
+          </div>
+        </form>
+        <div class="channel" id="one" data-room="roomOne" data="slotOne" value="1"><span>Status:  <span id="slotOne" class="slots">0/2</span></span></div>
+        <div class="channel" id="two" data-room="roomTwo" data="slotTwo" value="2"><span>Status:  <span id="slotTwo" class="slots">0/2</span></span></div>
+        <div class="channel" id="three" data-room="roomThree" data="slotThree" value="3"><span>Status: <span id="slotThree" class="slots">0/2</span></span></div>
+        <div class="channel" id="four" data-room="roomFour" data="slotFour" value="4"><span>Status: <span id="slotFour" class="slots">0/2</span></span></div>
+      </div>
+      <div class="room" id=roomOne></div>
+      <div class="room" id=roomTwo></div>
+      <div class="room" id=roomThree></div>
+      <div class="room" id=roomFour></div>
+      <div id="chatroom"></div>
+
+      <!-- javascript -->
+      <script src="assets/javascript/js.js"></script>
+    </BODY>
+</HTML>
