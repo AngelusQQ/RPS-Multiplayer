@@ -27,7 +27,6 @@ body {
   margin-left:36.5vw;
   margin-right:36.5vw;
   margin-top:33.5vh;
-  /* margin-bottom:33.5vh; */
   font-size:2.5vw;
 }
 
@@ -57,23 +56,20 @@ body {
 }
 
 #submit {
-  /* display:none; */
-
   margin-left:93.6vw;
   margin-top:-3.36vh;
   width:5vw;
   height:3.3vh;
   background-color:green;
-  font-size:1vw;
+  font-size:0.75vw;
   font-weight:bold;
   border-style:solid;
   border-color:black;
   border-width:2px;
+  text-align:center;
 }
 
 #chat {
-  /* display:none; */
-
   width:93vw;
   border-style:solid;
   border-color:black;
@@ -84,7 +80,6 @@ body {
 #chatbox {
   display: none;
 }
-
 
 .room {
   display:none;
@@ -102,15 +97,14 @@ body {
   width:98vw;
   border-style:solid;
   border-color:black;
-  border-width:1px;
-  margin-left:0.5vw;
+  border-width:0.05vw;
+  position:relative;
+  left: 0.5vw;
   background-color:white;
-  vertical-align:text-bottom;
+  vertical-align: bottom;
 }
 
 span {
-  /* display: none; */
-
   float: right;
   color: green;
   font-weight:bold;

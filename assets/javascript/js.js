@@ -32,6 +32,8 @@ function returningUser(userId) {
   $('form').css("display", "none");
 }
 
+//
+
 database.ref().on("value", function(snapshot) {
     if(!snapshot.child("server").exists()) {
       database.ref('server').set({
@@ -128,7 +130,9 @@ $(document).ready(function() {
     // $('#chatroom').css("display", "block");
     // $('#submit').css("display", "block");
     // $('#chat').css("display", "block");
-    $('#chatroom, #unique, #chatbox, #submit, #chat').css("display", "block");
+    $('#unique, #chatbox, #submit, #chat').css("display", "block");
+    // $('#chatroomtemp').css("display", "flex");
+    $('#chatroom').css("display", "table-cell");
   });
 
   //starting the game (user interacting with DOM)
@@ -141,7 +145,6 @@ $(document).ready(function() {
   //submit username or alias button [SUBMIT]
   $('#button').on("click", function(event) {
     event.preventDefault();
-    // database.ref('users/' + firebase.auth().currentUser.uid).child("name").set($('#login').val());
     newUser(firebase.auth().currentUser.uid, $('#login').val(), 0, 0, "Waiting", 0);
     $('#login').val("");
     console.log("Name Set");
