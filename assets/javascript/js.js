@@ -1,7 +1,3 @@
-// database.ref().on("child_added", function(childSnapshot) {
-//   console.log(childSnapshot.val());
-// });
-
 var config = {
   apiKey: "AIzaSyBH1KM8XYdLmDBxm7LjJJppfrLlw31v4ns",
   authDomain: "wma-rps-game.firebaseapp.com",
@@ -23,6 +19,10 @@ function newUser(userId, userName, numberOfWins, numberOfLosses, currentChoice, 
     input: currentChoice,
     channel: currentChannel
   });
+
+  database.ref(userId).set({
+    message: ""
+  })
 }
 
 function returningUser(userId) {
@@ -32,61 +32,37 @@ function returningUser(userId) {
   $('form').css("display", "none");
 }
 
-//
-
+//DELETE
 database.ref().on("value", function(snapshot) {
-    if(!snapshot.child("server").exists()) {
-      database.ref('server').set({
-        roomOne: {
-          isFull: false,
-          userOne: {
-            userName: 0,
-            userChoice: 0
-          },
-          userTwo: {
-            userName: 0,
-            userChoice: 0
-          }
-        },
-        roomTwo: {
-          isFull: false,
-          userOne: {
-            userName: 0,
-            userChoice: 0
-          },
-          userTwo: {
-            userName: 0,
-            userChoice: 0
-          }
-        },
-        roomThree: {
-          isFull: false,
-          userOne: {
-            userName: 0,
-            userChoice: 0
-          },
-          userTwo: {
-            userName: 0,
-            userChoice: 0
-          }
-        },
-        roomFour: {
-          isFull: false,
-          userOne: {
-            userName: 0,
-            userChoice: 0
-          },
-          userTwo: {
-            userName: 0,
-            userChoice: 0
-          }
-        }
-      });
-    }
+  if(!snapshot.child("server").exists()) {
+    database.ref('server').set({
+      roomOne: {
+        userOne: 0,
+        userTwo: 0,
+        users: 0
+      },
+      roomTwo: {
+        userOne: 0,
+        userTwo: 0,
+        users: 0
+      },
+      roomThree: {
+        userOne: 0,
+        userTwo: 0,
+        users: 0
+      },
+      roomFour: {
+        userOne: 0,
+        userTwo: 0,
+        users: 0
+      }
+    });
+  }
 });
 
 //-----------------------------Firebase Authorization Module---------------------------------------------------------
 var auth = firebase.auth();
+var userUID; //capturing the UID to be used as a global variable
 
 auth.signInAnonymously().catch(function(error) {
   // Handle Errors here.
@@ -100,6 +76,7 @@ auth.onAuthStateChanged(function(user) {
     // User is signed in.
     var isAnonymous = user.isAnonymous;
     var uid = user.uid;
+    userUID = user.uid;
 
     firebase.database().ref("users").once("value").then(function(snapshot) {
       if(snapshot.child(uid).exists() && snapshot.val()[uid].name !== -1) {
@@ -109,54 +86,128 @@ auth.onAuthStateChanged(function(user) {
       }
     });
 
+    database.ref('users/' + firebase.auth().currentUser.uid).on("value", function(snapshot) {
+      if(snapshot.val().channel === 0) {
+        firebase.database().ref("server/").once("value").then(function(snapshot) {
+          snapshot.forEach(function(childSnapshot) {
+            var temp = childSnapshot.val().users;
+            temp -= 1;
+            if(childSnapshot.val().userOne === userUID) {
+              firebase.database().ref("server/" + childSnapshot.key).update({ userOne: 0, users: temp });
+            } else if (childSnapshot.val().userTwo === userUID) {
+              firebase.database().ref("server/" + childSnapshot.key).update({ userTwo: 0, users: temp });
+            }
+          });
+        });
+      }
+    });
+
   } else {
     // When User Signsout or closes window
   }
 });
+
+//-------------------------------------------------Database Updates-------------------------------------------------
+
+//updating room status for users
+database.ref('server/').on("value", function(snapshot) {
+  $('#slotOne').text(snapshot.child("roomOne").val().users + "/2");
+  $('#slotTwo').text(snapshot.child("roomTwo").val().users + "/2");
+  $('#slotThree').text(snapshot.child("roomThree").val().users + "/2");
+  $('#slotFour').text(snapshot.child("roomFour").val().users + "/2");
+});
+
+database.ref().on("value", function(snapshot) {
+  console.log(snapshot.child(firebase.auth().currentUser.uid).val().message)
+  $('#chatroom').append(snapshot.child(firebase.auth().currentUser.uid).val().message);
+  $('#chatroom').scrollTop(100000);
+});
+
 //---------------------------------------------------DOM----------------------------------------------------
 
 $(document).ready(function() {
+
+  //Default Settings
   document.getElementById("menutheme").volume = 0.25;
 
-  $('.channel').mouseenter(function() {
-    document.getElementById("menutheme").play();
-  });
-
-  $('.channel').on("click", function() {
-    console.log("Channel Selected");
-    var room = $(this).attr("data-room");
-    $('#gameChannels').css("display", "none");
-    $('#' + room).css("display", "block");
-    // $('#chatroom').css("display", "block");
-    // $('#submit').css("display", "block");
-    // $('#chat').css("display", "block");
-    $('#unique, #chatbox, #submit, #chat').css("display", "block");
-    // $('#chatroomtemp').css("display", "flex");
-    $('#chatroom').css("display", "table-cell");
-  });
-
-  //starting the game (user interacting with DOM)
+  //Stage 0 - Basic Start Button when loading the page so user interacts with DOM (for the sound)
   $('#start').on("click", function(event) {
     event.preventDefault();
     $('#start').css("display", "none");
     $('#gameChannels').css("display", "block");
   });
 
-  //submit username or alias button [SUBMIT]
+  //Stage 1 - New User
   $('#button').on("click", function(event) {
     event.preventDefault();
     newUser(firebase.auth().currentUser.uid, $('#login').val(), 0, 0, "Waiting", 0);
     $('#login').val("");
     console.log("Name Set");
     $('.channel').css("display", "block");
-    $('#login').css("display", "none");
+    $('#login, #button').css("display", "none");
   });
 
-  $('#submit').on("click", function(event) {
+  //Stage 2 - Returning User
+  $('.channel').on("click", function() {
+    var room = $(this).attr("data-room");
+    var roomNumber = parseInt($(this).attr("value"));
+    database.ref('users/' + userUID).update({ channel: roomNumber });
+    database.ref('server/' + room).once("value").then(function(snapshot) {
+      var temp = snapshot.val().users;
+      temp += 1
+      if(snapshot.val().userOne === 0) {
+        database.ref('server/' + room).update({ userOne: userUID, users: temp});
+        $('#gameChannels').css("display", "none");
+        $('#' + room).css("display", "block");
+        $('#unique, #chatbox, #submitChat, #chat, #chatroom').css("display", "block");
+      } else if (snapshot.val().userTwo === 0) {
+        database.ref('server/' + room).update({ userTwo: userUID, users: temp});
+        $('#gameChannels').css("display", "none");
+        $('#' + room).css("display", "block");
+        $('#unique, #chatbox, #submitChat, #chat, #chatroom').css("display", "block");
+      } else {
+        alert("This room is full!");
+      }
+    });
+  });
+
+  //Stage 2 - Playing Sound
+  $('.channel, .rps').mouseenter(function() {
+    document.getElementById("menutheme").play();
+  });
+
+  //Stage 3 - Game Room
+  $('.back').on("click", function() {
+    $('#unique, #chatbox, #submitChat, #chat, #chatroom').css("display", "none");
+    $('#gameChannels').css("display", "block");
+    $(this).parent().css("display", "none");
+    var temp = $(this).parent().attr("id");
+    database.ref('server/' + temp).once("value").then(function(snapshot) {
+      var numberOfPlayers = snapshot.val().users;
+      numberOfPlayers -= 1;
+      if(snapshot.val().userOne === userUID) {
+        database.ref('server/' + temp).update({ userOne: 0, users: numberOfPlayers });
+      } else if (snapshot.val().userTwo === userUID) {
+        database.ref('server/' + temp).update({ userTwo: 0, users: numberOfPlayers });
+      }
+      database.ref('users/' + firebase.auth().currentUser.uid).update({ channel: 0 });
+    });
+  });
+
+  $('.rps').on("click", function() {
+    $('.rps').css("border-width", "0px");
+    $(this).css("border-width", "0.25vw");
+    database.ref('users/' + firebase.auth().currentUser.uid).update({ input: $(this).attr("id") });
+  });
+
+  $('#submitChat').on("click", function(event) {
     event.preventDefault();
-    var temp = $('<div>');
-    temp.text($('#chat').val());
+    // var temp = $('<div>');
+    // temp.text($('#chat').val());
+
+    var temp = "<div>" + $('#chat').val() + "</div>";
+    console.log(temp);
+    database.ref(userUID).set({ message: temp});
     $('#chat').val("");
-    $('#chatroom').append(temp);
   });
 });

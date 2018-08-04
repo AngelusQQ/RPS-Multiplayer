@@ -17,7 +17,7 @@
       <script src="https://www.gstatic.com/firebasejs/5.3.0/firebase.js"></script>
 
       <img id=title src="assets/images/title.png">
-      <button type="submit" class="btn btn-primary" id="start">Start</button>
+      <button type="submit" class="btn btn-primary" id="start">Play!</button>
       <div id="gameChannels">
         <audio id="menutheme" src="assets/sounds/menuhover.mp3"></audio>
         <form>
@@ -26,21 +26,21 @@
             <button type="submit" class="btn btn-primary" id="button">Enter</button>
           </div>
         </form>
-        <div class="channel" id="one" data-room="roomOne" data="slotOne" value="1"><span>Status:  <span id="slotOne" class="slots">0/2</span></span></div>
-        <div class="channel" id="two" data-room="roomTwo" data="slotTwo" value="2"><span>Status:  <span id="slotTwo" class="slots">0/2</span></span></div>
-        <div class="channel" id="three" data-room="roomThree" data="slotThree" value="3"><span>Status: <span id="slotThree" class="slots">0/2</span></span></div>
-        <div class="channel" id="four" data-room="roomFour" data="slotFour" value="4"><span>Status: <span id="slotFour" class="slots">0/2</span></span></div>
+        <div class="channel" id="one" data-room="roomOne" value=1><span>Status:  <span id="slotOne" data="1" class="slots">0/2</span></span></div>
+        <div class="channel" id="two" data-room="roomTwo" value=2><span>Status:  <span id="slotTwo" data="2" class="slots">0/2</span></span></div>
+        <div class="channel" id="three" data-room="roomThree" value=3><span>Status: <span id="slotThree" data="3" class="slots">0/2</span></span></div>
+        <div class="channel" id="four" data-room="roomFour" value=4><span>Status: <span id="slotFour" data="4" class="slots">0/2</span></span></div>
       </div>
-      <div class="room" id=roomOne></div>
-      <div class="room" id=roomTwo></div>
-      <div class="room" id=roomThree></div>
-      <div class="room" id=roomFour></div>
-      <div id="chatroom"></div>
+      <div class="room" id=roomOne><img class="back" src="assets/images/back.png"><img id="rock" class="rps" src="assets/images/rock.png"><img id="paper" class="rps" src="assets/images/paper.png"><img id="scissor" class="rps" src="assets/images/scissor.png"></div>
+      <div class="room" id=roomTwo><img class="back" src="assets/images/back.png"><img id="rock" class="rps" src="assets/images/rock.png"><img id="paper" class="rps" src="assets/images/paper.png"><img id="scissor" class="rps" src="assets/images/scissor.png"></div>
+      <div class="room" id=roomThree><img class="back" src="assets/images/back.png"><img id="rock" class="rps" src="assets/images/rock.png"><img id="paper" class="rps" src="assets/images/paper.png"><img id="scissor" class="rps" src="assets/images/scissor.png"></div>
+      <div class="room" id=roomFour><img class="back" src="assets/images/back.png"><img id="rock" class="rps" src="assets/images/rock.png"><img id="paper" class="rps" src="assets/images/paper.png"><img id="scissor" class="rps" src="assets/images/scissor.png"></div>
+      <div id="chatroom"><br><br><br><br><br><br><br><br><br><br><br></div>
       <div id="chatbox">
         <form id="unique">
           <div class="form-group">
             <input type="text" class="form-control" id="chat" placeholder="enter chat">
-            <button type="submit" class="btn btn-primary" id="submit">Enter</button>
+            <button type="submit" class="btn btn-primary" id="submitChat">Enter</button>
           </div>
         </form>
       </div>

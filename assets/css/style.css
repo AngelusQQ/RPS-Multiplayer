@@ -36,13 +36,13 @@ body {
   margin-left:40vw;
   text-align:center;
   font-weight:bold;
+  font-size:1.5vw;
+  height:5vh;
   width:20vw;
   margin-top:35vh;
 }
 
 #button {
-  display:none;
-
   margin-left:62vw;
   margin-top:-7.5vh;
   width:4.5vw;
@@ -55,7 +55,7 @@ body {
   border-width:1px;
 }
 
-#submit {
+#submitChat {
   margin-left:93.6vw;
   margin-top:-3.36vh;
   width:5vw;
@@ -92,16 +92,70 @@ body {
 }
 
 #chatroom {
-  display:none;
-  height:20vh;
+  /* display:none; */
+  /* height:20vh;
   width:98vw;
+  background-color:white;
+  position:relative;
+  left: 0.5vw;
+  border-style:solid;
+  border-color:black;
+  border-width:0.05vw; */
+  /* vertical-align: bottom; */
+  /* height: 20vh;
+  width:98vw; */
+  color:green;
+
+}
+
+#chatroom {
+  height:24vh;
+  width:98vw;
+  background-color:white;
+  position:relative;
+  left: 0.5vw;
   border-style:solid;
   border-color:black;
   border-width:0.05vw;
-  position:relative;
-  left: 0.5vw;
-  background-color:white;
-  vertical-align: bottom;
+  display:none;
+  overflow: auto;
+}
+
+.back {
+  width:7vw;
+  margin-bottom:50vh;
+}
+
+.back:hover {
+  height: 8.5vh;
+  width:7vw;
+  opacity:0.75;
+}
+
+.back:active {
+  height:8vh;
+}
+
+.rps {
+  /* display:none; */
+  margin-top: 10vh;
+  margin-left:10.5vw;
+  width:14vw;
+  height:33vh;
+  border-style: solid;
+  border-color: black;
+  /* border-width: 0.25vw; */
+  border-width:0px;
+  padding:20px;
+}
+
+.rps:hover {
+  height:40vh;
+  opacity:0.75;
+}
+
+.rps:active {
+  height:33vh;
 }
 
 span {
