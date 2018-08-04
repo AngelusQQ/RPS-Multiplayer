@@ -21,7 +21,7 @@ function newUser(userId, userName, numberOfWins, numberOfLosses, currentChoice, 
   });
 
   database.ref(userId).set({
-    message: ""
+    message: "temp"
   })
 }
 
@@ -78,12 +78,26 @@ auth.onAuthStateChanged(function(user) {
     var uid = user.uid;
     userUID = user.uid;
 
+    firebase.auth().currentUser.updateProfile({ displayName: "User Ones" });
+
     firebase.database().ref("users").once("value").then(function(snapshot) {
       if(snapshot.child(uid).exists() && snapshot.val()[uid].name !== -1) {
         returningUser(uid);
       } else {
         newUser(uid, -1, 0, 0, "Waiting", 0);
       }
+    });
+
+    database.ref('server/').on("value", function(snapshot) {
+      // console.log(snapshot.child(firebase.auth().currentUser.uid).val().message)
+      snapshot.forEach(function(childSnapshot) {
+        if(childSnapshot.val().message !== "") {
+          $('#chatroom').append(childSnapshot.val().message);
+          $('#chatroom').scrollTop(100000);
+          database.ref('server/' + childSnapshot.key).update({ message: "" });
+        }
+      });
+
     });
 
     database.ref('users/' + firebase.auth().currentUser.uid).on("value", function(snapshot) {
@@ -117,11 +131,11 @@ database.ref('server/').on("value", function(snapshot) {
   $('#slotFour').text(snapshot.child("roomFour").val().users + "/2");
 });
 
-database.ref().on("value", function(snapshot) {
-  console.log(snapshot.child(firebase.auth().currentUser.uid).val().message)
-  $('#chatroom').append(snapshot.child(firebase.auth().currentUser.uid).val().message);
-  $('#chatroom').scrollTop(100000);
-});
+// database.ref().on("value", function(snapshot) {
+//   // console.log(snapshot.child(firebase.auth().currentUser.uid).val().message)
+//   $('#chatroom').append(snapshot.child(firebase.auth().currentUser.uid).val().message);
+//   $('#chatroom').scrollTop(100000);
+// });
 
 //---------------------------------------------------DOM----------------------------------------------------
 
@@ -201,13 +215,15 @@ $(document).ready(function() {
   });
 
   $('#submitChat').on("click", function(event) {
-    event.preventDefault();
-    // var temp = $('<div>');
-    // temp.text($('#chat').val());
 
-    var temp = "<div>" + $('#chat').val() + "</div>";
-    console.log(temp);
-    database.ref(userUID).set({ message: temp});
-    $('#chat').val("");
+    event.preventDefault();
+
+    database.ref('users/' + userUID).once("value").then(function(snapshot) {
+      var temp = "<div>" + snapshot.val().name + ": " + $('#chat').val() + "</div>";
+      var room = $('*[data=' + snapshot.val().channel + ']').parent().parent().attr("data-room");
+      database.ref('server/' + room).update({ message: temp})
+      $('#chat').val("");
+    });
+
   });
 });
