@@ -89,13 +89,14 @@ auth.onAuthStateChanged(function(user) {
     });
 
     database.ref('server/').on("value", function(snapshot) {
-      // console.log(snapshot.child(firebase.auth().currentUser.uid).val().message)
+
       snapshot.forEach(function(childSnapshot) {
         if(childSnapshot.val().message !== "") {
           $('#chatroom').append(childSnapshot.val().message);
           $('#chatroom').scrollTop(100000);
           database.ref('server/' + childSnapshot.key).update({ message: "" });
         }
+
       });
 
     });
@@ -111,6 +112,17 @@ auth.onAuthStateChanged(function(user) {
             } else if (childSnapshot.val().userTwo === userUID) {
               firebase.database().ref("server/" + childSnapshot.key).update({ userTwo: 0, users: temp });
             }
+
+            database.ref("users/" + firebase.auth().currentUser.uid).once("value", function (temp){
+              console.log(childSnapshot.key);
+              console.log(temp.val().channel);
+              console.log($('*[data=' + temp.val().channel + ']').parent().parent().attr("data-room"));
+              if( $('*[data=' + temp.val().channel + ']').parent().parent().attr("data-room") ===  childSnapshot.key) {
+                $('#chatroom').append("Someone has Left");
+              }
+
+            });
+
           });
         });
       }
@@ -130,12 +142,6 @@ database.ref('server/').on("value", function(snapshot) {
   $('#slotThree').text(snapshot.child("roomThree").val().users + "/2");
   $('#slotFour').text(snapshot.child("roomFour").val().users + "/2");
 });
-
-// database.ref().on("value", function(snapshot) {
-//   // console.log(snapshot.child(firebase.auth().currentUser.uid).val().message)
-//   $('#chatroom').append(snapshot.child(firebase.auth().currentUser.uid).val().message);
-//   $('#chatroom').scrollTop(100000);
-// });
 
 //---------------------------------------------------DOM----------------------------------------------------
 
