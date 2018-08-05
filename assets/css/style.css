@@ -27,7 +27,7 @@ body {
   margin-left:36.5vw;
   margin-right:36.5vw;
   margin-top:33.5vh;
-  font-size:2.5vw;
+  font-size:2.0vw;
 }
 
 #start {
@@ -92,20 +92,7 @@ body {
 }
 
 #chatroom {
-  /* display:none; */
-  /* height:20vh;
-  width:98vw;
-  background-color:white;
-  position:relative;
-  left: 0.5vw;
-  border-style:solid;
-  border-color:black;
-  border-width:0.05vw; */
-  /* vertical-align: bottom; */
-  /* height: 20vh;
-  width:98vw; */
-  color:green;
-
+  color:black;
 }
 
 #chatroom {

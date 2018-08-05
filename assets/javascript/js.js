@@ -19,10 +19,6 @@ function newUser(userId, userName, numberOfWins, numberOfLosses, currentChoice, 
     input: currentChoice,
     channel: currentChannel
   });
-
-  database.ref(userId).set({
-    message: "temp"
-  })
 }
 
 function returningUser(userId) {
@@ -37,24 +33,40 @@ database.ref().on("value", function(snapshot) {
   if(!snapshot.child("server").exists()) {
     database.ref('server').set({
       roomOne: {
+        message: "",
         userOne: 0,
         userTwo: 0,
-        users: 0
+        users: 0,
+        inGame: false,
+        choiceOne: "One",
+        choiceTwo: "Two"
       },
       roomTwo: {
+        message: "",
         userOne: 0,
         userTwo: 0,
-        users: 0
+        users: 0,
+        inGame: false,
+        choiceOne: "One",
+        choiceTwo: "Two"
       },
       roomThree: {
+        message: "",
         userOne: 0,
         userTwo: 0,
-        users: 0
+        users: 0,
+        inGame: false,
+        choiceOne: "One",
+        choiceTwo: "Two"
       },
       roomFour: {
+        message: "",
         userOne: 0,
         userTwo: 0,
-        users: 0
+        users: 0,
+        inGame: false,
+        choiceOne: "One",
+        choiceTwo: "Two"
       }
     });
   }
@@ -88,45 +100,182 @@ auth.onAuthStateChanged(function(user) {
       }
     });
 
+    //updating chatroom messages
     database.ref('server/').on("value", function(snapshot) {
-
       snapshot.forEach(function(childSnapshot) {
-        if(childSnapshot.val().message !== "") {
+        if(childSnapshot.val().message !== "" && childSnapshot.val().userOne === userUID || childSnapshot.val().userTwo === userUID) {
           $('#chatroom').append(childSnapshot.val().message);
           $('#chatroom').scrollTop(100000);
           database.ref('server/' + childSnapshot.key).update({ message: "" });
         }
+      });
+    });
 
+    database.ref('users/' + firebase.auth().currentUser.uid).on("value", function(datasnapshot) {
+      firebase.database().ref("server/").once("value").then(function(snapshot) {
+        snapshot.forEach(function(childSnapshot) {
+          //updating the number of users
+          if(datasnapshot.val().channel === 0) {
+            var temp = childSnapshot.val().users;
+            temp -= 1;
+            if(childSnapshot.val().userOne === userUID) {
+              firebase.database().ref("server/" + childSnapshot.key).update({ userOne: 0, users: temp, inGame: false });
+            } else if (childSnapshot.val().userTwo === userUID) {
+              firebase.database().ref("server/" + childSnapshot.key).update({ userTwo: 0, users: temp, inGame: false });
+            }
+          }
+        });
       });
 
     });
 
-    database.ref('users/' + firebase.auth().currentUser.uid).on("value", function(snapshot) {
-      if(snapshot.val().channel === 0) {
-        firebase.database().ref("server/").once("value").then(function(snapshot) {
-          snapshot.forEach(function(childSnapshot) {
-            var temp = childSnapshot.val().users;
-            temp -= 1;
-            if(childSnapshot.val().userOne === userUID) {
-              firebase.database().ref("server/" + childSnapshot.key).update({ userOne: 0, users: temp });
-            } else if (childSnapshot.val().userTwo === userUID) {
-              firebase.database().ref("server/" + childSnapshot.key).update({ userTwo: 0, users: temp });
-            }
+    //starting the game
+    database.ref('server/').on("value", function(snapshot) {
+      snapshot.forEach(function(childSnapshot) {
+        var temp = childSnapshot.val();
+        if(temp.userOne !== 0 && temp.userTwo !== 0 && temp.inGame === false) {
+          database.ref('server/' + childSnapshot.key).update({ inGame: true });
+          $('#chatroom').append("<div>Game has Started! Select a choice!</div>");
+        }
+      });
+    });
 
-            database.ref("users/" + firebase.auth().currentUser.uid).once("value", function (temp){
-              console.log(childSnapshot.key);
-              console.log(temp.val().channel);
-              console.log($('*[data=' + temp.val().channel + ']').parent().parent().attr("data-room"));
-              if( $('*[data=' + temp.val().channel + ']').parent().parent().attr("data-room") ===  childSnapshot.key) {
-                $('#chatroom').append("Someone has Left");
-              }
-
-            });
-
+    //serverOne
+    database.ref('server/roomOne').on("value", function(snapshot) {
+      if(snapshot.val().inGame === true) {
+        //draw
+        if(snapshot.val().choiceOne === snapshot.val().choiceTwo) {
+          $('.rps').css("border-width", "0");
+          database.ref('server/roomOne').update({
+            choiceOne: "One",
+            choiceTwo: "Two",
+            message: "DRAW!"
           });
-        });
+        } else if (snapshot.val().choiceOne !== snapshot.val().choiceTwo) {
+          if(snapshot.val().choiceOne === "rock" && snapshot.val().choiceTwo === "paper" || snapshot.val().choiceOne === "paper" && snapshot.val().choiceTwo === "scissors" || snapshot.val().choiceOne === "scissors" && snapshot.val().choiceTwo === "rock") {
+            //player 2 wins
+            $('.rps').css("border-width", "0");
+            database.ref('server/roomOne').update({
+              choiceOne: "One",
+              choiceTwo: "Two",
+              message: "Player 2 wins!"
+            });
+          } else if(snapshot.val().choiceTwo === "rock" && snapshot.val().choiceOne === "paper" || snapshot.val().choiceTwo === "paper" && snapshot.val().choiceOne === "scissors" || snapshot.val().choiceTwo === "scissors" && snapshot.val().choiceOne === "rock") {
+            //player 1 wins
+            $('.rps').css("border-width", "0");
+            database.ref('server/roomOne').update({
+              choiceOne: "One",
+              choiceTwo: "Two",
+              message: "Player 1 wins!"
+            });
+          }
+        }
       }
     });
+
+    //serverOne
+    database.ref('server/roomTwo').on("value", function(snapshot) {
+      if(snapshot.val().inGame === true) {
+        //draw
+        if(snapshot.val().choiceOne === snapshot.val().choiceTwo) {
+          $('.rps').css("border-width", "0");
+          database.ref('server/roomTwo').update({
+            choiceOne: "One",
+            choiceTwo: "Two",
+            message: "DRAW!"
+          });
+        } else if (snapshot.val().choiceOne !== snapshot.val().choiceTwo) {
+          if(snapshot.val().choiceOne === "rock" && snapshot.val().choiceTwo === "paper" || snapshot.val().choiceOne === "paper" && snapshot.val().choiceTwo === "scissors" || snapshot.val().choiceOne === "scissors" && snapshot.val().choiceTwo === "rock") {
+            //player 2 wins
+            $('.rps').css("border-width", "0");
+            database.ref('server/roomTwo').update({
+              choiceOne: "One",
+              choiceTwo: "Two",
+              message: "Player 2 wins!"
+            });
+          } else if(snapshot.val().choiceTwo === "rock" && snapshot.val().choiceOne === "paper" || snapshot.val().choiceTwo === "paper" && snapshot.val().choiceOne === "scissors" || snapshot.val().choiceTwo === "scissors" && snapshot.val().choiceOne === "rock") {
+            //player 1 wins
+            $('.rps').css("border-width", "0");
+            database.ref('server/roomTwo').update({
+              choiceOne: "One",
+              choiceTwo: "Two",
+              message: "Player 1 wins!"
+            });
+          }
+        }
+      }
+    });
+
+
+    //serverThree
+    database.ref('server/roomThree').on("value", function(snapshot) {
+      if(snapshot.val().inGame === true) {
+        //draw
+        if(snapshot.val().choiceOne === snapshot.val().choiceTwo) {
+          $('.rps').css("border-width", "0");
+          database.ref('server/roomThree').update({
+            choiceOne: "One",
+            choiceTwo: "Two",
+            message: "DRAW!"
+          });
+        } else if (snapshot.val().choiceOne !== snapshot.val().choiceTwo) {
+          if(snapshot.val().choiceOne === "rock" && snapshot.val().choiceTwo === "paper" || snapshot.val().choiceOne === "paper" && snapshot.val().choiceTwo === "scissors" || snapshot.val().choiceOne === "scissors" && snapshot.val().choiceTwo === "rock") {
+            //player 2 wins
+            $('.rps').css("border-width", "0");
+            database.ref('server/roomThree').update({
+              choiceOne: "One",
+              choiceTwo: "Two",
+              message: "Player 2 wins!"
+            });
+          } else if(snapshot.val().choiceTwo === "rock" && snapshot.val().choiceOne === "paper" || snapshot.val().choiceTwo === "paper" && snapshot.val().choiceOne === "scissors" || snapshot.val().choiceTwo === "scissors" && snapshot.val().choiceOne === "rock") {
+            //player 1 wins
+            $('.rps').css("border-width", "0");
+            database.ref('server/roomThree').update({
+              choiceOne: "One",
+              choiceTwo: "Two",
+              message: "Player 1 wins!"
+            });
+          }
+        }
+      }
+    });
+
+
+    //serverFour
+    database.ref('server/roomFour').on("value", function(snapshot) {
+      if(snapshot.val().inGame === true) {
+        //draw
+        if(snapshot.val().choiceOne === snapshot.val().choiceTwo) {
+          $('.rps').css("border-width", "0");
+          database.ref('server/roomFour').update({
+            choiceOne: "One",
+            choiceTwo: "Two",
+            message: "DRAW!"
+          });
+        } else if (snapshot.val().choiceOne !== snapshot.val().choiceTwo) {
+          if(snapshot.val().choiceOne === "rock" && snapshot.val().choiceTwo === "paper" || snapshot.val().choiceOne === "paper" && snapshot.val().choiceTwo === "scissors" || snapshot.val().choiceOne === "scissors" && snapshot.val().choiceTwo === "rock") {
+            //player 2 wins
+            $('.rps').css("border-width", "0");
+            database.ref('server/roomFour').update({
+              choiceOne: "One",
+              choiceTwo: "Two",
+              message: "Player 2 wins!"
+            });
+          } else if(snapshot.val().choiceTwo === "rock" && snapshot.val().choiceOne === "paper" || snapshot.val().choiceTwo === "paper" && snapshot.val().choiceOne === "scissors" || snapshot.val().choiceTwo === "scissors" && snapshot.val().choiceOne === "rock") {
+            //player 1 wins
+            $('.rps').css("border-width", "0");
+            database.ref('server/roomFour').update({
+              choiceOne: "One",
+              choiceTwo: "Two",
+              message: "Player 1 wins!"
+            });
+          }
+        }
+      }
+    });
+
+
+
 
   } else {
     // When User Signsout or closes window
@@ -134,6 +283,13 @@ auth.onAuthStateChanged(function(user) {
 });
 
 //-------------------------------------------------Database Updates-------------------------------------------------
+//initial update room status for joining users
+database.ref('server/').once("value", function(snapshot) {
+  $('#slotOne').text(snapshot.child("roomOne").val().users + "/2");
+  $('#slotTwo').text(snapshot.child("roomTwo").val().users + "/2");
+  $('#slotThree').text(snapshot.child("roomThree").val().users + "/2");
+  $('#slotFour').text(snapshot.child("roomFour").val().users + "/2");
+});
 
 //updating room status for users
 database.ref('server/').on("value", function(snapshot) {
@@ -180,13 +336,17 @@ $(document).ready(function() {
         $('#gameChannels').css("display", "none");
         $('#' + room).css("display", "block");
         $('#unique, #chatbox, #submitChat, #chat, #chatroom').css("display", "block");
+        alert("You are player 1");
       } else if (snapshot.val().userTwo === 0) {
         database.ref('server/' + room).update({ userTwo: userUID, users: temp});
         $('#gameChannels').css("display", "none");
         $('#' + room).css("display", "block");
         $('#unique, #chatbox, #submitChat, #chat, #chatroom').css("display", "block");
-      } else {
+        alert("You are player 2");
+      } else if (snapshot.val().userOne !== 0 && snapshot.val().userOne !== 0){
         alert("This room is full!");
+      } else if (snapshot.val().userOne === userUID || snapshot.val().userTwo === userUID) {
+        alert("You are already in this room in another window!");
       }
     });
   });
@@ -217,7 +377,20 @@ $(document).ready(function() {
   $('.rps').on("click", function() {
     $('.rps').css("border-width", "0px");
     $(this).css("border-width", "0.25vw");
-    database.ref('users/' + firebase.auth().currentUser.uid).update({ input: $(this).attr("id") });
+    // database.ref('users/' + firebase.auth().currentUser.uid).update({ input: $(this).attr("id") });
+    var room = $(this).parent().attr("id");
+    var choice = $(this).attr("id");
+    database.ref('server/' + room).once("value", function(snapshot) {
+      var temp = snapshot.val();
+      if(temp.userOne === userUID) {
+        database.ref('server/' + room).update({ choiceOne: choice });
+      } else if(temp.userTwo === userUID) {
+        database.ref('server/' + room).update({ choiceTwo: choice });
+      }
+    });
+
+    $('#chatroom').append("<div>You have chosen " + $(this).attr("id") + "</div>");
+    $('#chatroom').scrollTop(100000);
   });
 
   $('#submitChat').on("click", function(event) {
